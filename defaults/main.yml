@@ -1,0 +1,44 @@
+# Defaults for FreeBSD 9-10 (this variable is only used in this file)
+crontab_root_defaults:
+  - minute: '*/5'
+    who: root
+    command: /usr/libexec/atrun
+  - comment: 'Save some entropy so that /dev/random can re-seed on boot.'
+    minute: '*/11'
+    who: operator
+    command: /usr/libexec/save-entropy
+  - comment: 'Rotate log files every hour, if necessary.'
+    minute: '0'
+    who: root
+    command: newsyslog
+  - comment: 'Perform daily/weekly/monthly maintenance.'
+    minute: 1
+    hour: 3
+    who: root
+    command: periodic daily
+  - minute: 15
+    hour: 4
+    wday: 6
+    who: root
+    command: periodic weekly
+  - minute: 30
+    hour: 5
+    mday: 1
+    who: root
+    command: periodic monthly
+  - comment: "Adjust the time zone if the CMOS clock keeps local time, as opposed to\n# UTC time.  See adjkerntz(8) for details."
+    minute: '1,31'
+    hour: '0-5'
+    who: root
+    command: adjkerntz -a
+
+# An example of specific cron task
+crontab_root_specific:
+  - comment: 'PF expires bruteforce ban (10 days)'
+    minute: 0
+    hour: 1
+    who: root
+    command: /sbin/pfctl -t ssh-brute -T expire 864000 2> /dev/null
+
+# This is an example to DRY the list
+crontab_root_entries: "{{ crontab_root_defaults + crontab_root_specific }}"

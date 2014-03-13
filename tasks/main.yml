@@ -1,0 +1,4 @@
+---
+- name: /etc/crontab
+  template: src=crontab.j2 dest=/etc/crontab owner=root group=wheel mode=400
+  tags: crontab-root
